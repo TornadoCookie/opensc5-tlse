@@ -1,0 +1,7 @@
+DefaultPlatform linux64-debug
+UseRaylib False
+
+
+Program opensc5_server
+Source main.c
+
