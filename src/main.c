@@ -5,6 +5,11 @@
 int main()
 {
     int sock = socket(AF_INET, SOCK_STREAM, 0);
+    if (sock == -1)
+    {
+        perror("no socket");
+        return 1;
+    }
 
     struct sockaddr_in server;
     server.sin_family = AF_INET;
@@ -14,11 +19,22 @@ int main()
     int enable = 1;
     setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int));
 
-    bind(sock, (struct sockaddr *)&server, sizeof(server));
+    if (bind(sock, (struct sockaddr *)&server, sizeof(server)) < 0)
+    {
+        perror("bind");
+        return 1;
+    }
 
     listen(sock, 3);
 
     SSL *ctx = SSL_CTX_new(SSLv3_server_method());
+    SSL_CTX_use_PrivateKey_file(ctx, "cert/private.key", SSL_SERVER_RSA_KEY);
+    SSL_CTX_use_certificate_file(ctx, "cert/cert.crt", SSL_SERVER_RSA_CERT);
+
+    if (!SSL_CTX_check_private_key(ctx)) {
+        fprintf(stderr, "Private key not loaded\n");
+        return -2;
+    }
 
     while (1)
     {
