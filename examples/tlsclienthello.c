@@ -121,7 +121,7 @@ int main(int argc, char *argv[]) {
                 // try kTLS (kernel TLS implementation in linux >= 4.13)
                 // note that you can use send on a ktls socket
                 // recv must be handled by TLSe
-                if (!tls_make_ktls(context, socket)) {
+                if (!tls_make_ktls(context, sockfd)) {
                     // call send as on regular TCP sockets
                     // TLS record layer is handled by the kernel
                     send(sockfd, request, strlen(request), 0);
